@@ -1,0 +1,19 @@
+总用量 112
+drwxr-xr-x  5 xiaxue xiaxue 4096 4月  11 13:30 .
+drwxr-xr-x 46 xiaxue xiaxue 4096 4月  11 13:30 ..
+-rw-r--r--  1 xiaxue xiaxue 1985 3月  26 19:19 10.c
+-rw-r--r--  1 xiaxue xiaxue 1300 3月  26 18:30 10.作业.cpp
+-rw-r--r--  1 xiaxue xiaxue 1267 3月  26 18:13 11.c
+-rw-r--r--  1 xiaxue xiaxue 1115 3月  26 20:37 12.多线程.c
+-rw-r--r--  1 xiaxue xiaxue 1923 3月  28 14:06 13.1.c
+-rw-r--r--  1 xiaxue xiaxue 1095 4月   9 20:23 15.shm.c
+-rw-r--r--  1 xiaxue xiaxue 2225 4月   5 18:36 18.shm2_add.c
+-rw-r--r--  1 xiaxue xiaxue  950 4月   7 20:56 19.shm2.c
+drwxr-xr-x  2 xiaxue xiaxue 4096 3月  15 14:55 1.shell
+-rw-r--r--  1 xiaxue xiaxue  127 4月  11 13:12 20.c
+-rw-r--r--  1 xiaxue xiaxue  759 4月  11 13:30 21.popen.c
+-rw-r--r--  1 xiaxue xiaxue 7006 3月  21 17:22 2ls.c
+drwxr-xr-x  4 xiaxue xiaxue 4096 4月   9 15:36 2.多进程
+drwxr-xr-x  2 xiaxue xiaxue 4096 4月   9 12:36 3.flock
+-rw-r--r--  1 xiaxue xiaxue 7242 3月  21 20:19 3.ls.c
+-rw-r--r--  1 xiaxue xiaxue 1465 3月  21 20:56 4.mor

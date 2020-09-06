@@ -1,0 +1,32 @@
+/*************************************************************************
+	> File Name: zzz.cpp
+	> Author: 
+	> Mail: 
+	> Created Time: 2020年08月19日 星期三 16时48分16秒
+ ************************************************************************/
+
+#include <iostream>
+#include <cstdio>
+#include <cstring>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+#include <queue>
+using namespace std;
+
+long long n, k, ans;
+
+int main() {
+    cin >> n >> k;
+    if (k == 0) {
+        cout << n * n << endl;
+        return 0;
+    }
+    for (int y = k + 1; y <= n; y++) {
+        int t1 = n / y, t2 = n % y;
+        ans += t1 * (y - k);
+        ans += t2 - k + 1 > 0 ? t2 - k + 1 : 0;
+    }
+    cout << ans << endl;
+    return 0;
+}

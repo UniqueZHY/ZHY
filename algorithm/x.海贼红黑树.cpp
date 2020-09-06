@@ -1,0 +1,210 @@
+/*************************************************************************
+	> File Name: x.海贼红黑树.cpp
+	> Author: 
+	> Mail: 
+	> Created Time: 2020年05月28日 星期四 15时32分30秒
+ ************************************************************************/
+#include <stdio.h>
+#include <stdlib.h>
+#define RED 0
+#define BLACK 1
+#define DOUBLE_BLACK 2
+
+typedef struct Node {
+    int key, color; // 0 red, 1 black, 2 double black
+    struct Node *lchild, *rchild;
+} Node;
+
+Node _NIL, * const NIL = &_NIL;
+
+__attribute__((constructor))
+void init_NIL() {
+    NIL->key = 0;
+    NIL->lchild = NIL->rchild = NIL;
+    NIL->color = BLACK;
+    return ;
+}
+
+Node *getNewNode(int key) {
+    Node *p = (Node *)malloc(sizeof(Node));
+    p->key = key;
+    p->lchild = p->rchild = NIL;
+    p->color = RED;
+    return p;
+}
+
+int hasRedChild(Node *root) {
+    return root->lchild->color == RED || root->rchild->color == RED;
+}
+
+Node *left_rotate(Node *root) {
+    Node *temp = root->rchild;
+    root->rchild = temp->lchild;
+    temp->lchild = root;
+    return temp;
+}
+
+Node *right_rotate(Node *root) {
+    Node *temp = root->lchild;
+    root->lchild = temp->rchild;
+    temp->rchild = root;
+    return temp;
+}
+
+Node *insert_maintain(Node *root) {
+    if (!hasRedChild(root)) return root;
+    if (root->lchild->color == RED && root->rchild->color == RED) {//俩子树都红
+        if (!hasRedChild(root->lchild) && !hasRedChild(root->rchild)) return root;//俩子树都红但无两红连在一起
+        goto insert_end;//变红黑黑
+    }
+    //就一个子树红
+    if (root->lchild->color == RED) {//左红
+        if (!hasRedChild(root->lchild)) return root;
+        if (root->lchild->rchild->color == RED) {
+            root->lchild = left_rotate(root->lchild);
+        }
+        root = right_rotate(root);
+    } else {//右红
+        if (!hasRedChild(root->rchild)) return root;
+        if (root->rchild->lchild->color == RED) {
+            root->rchild = right_rotate(root->rchild);
+        }
+        root = left_rotate(root);
+    }
+insert_end://变红黑黑
+    root->color = RED;
+    root->lchild->color = root->rchild->color = BLACK;
+    return root;
+}
+
+Node *__insert(Node *root, int key) {
+    if (root == NIL) return getNewNode(key);
+    if (root->key == key) return root;
+    if (root->key > key) root->lchild = __insert(root->lchild, key);
+    else root->rchild = __insert(root->rchild, key);
+    return insert_maintain(root);
+}
+
+Node *insert(Node *root, int key) {
+    root = __insert(root, key);
+    root->color = BLACK;
+    return root;
+}
+Node *predeccessor(Node *root) {
+    Node *temp = root->lchild;
+    while (temp->rchild != NIL) temp = temp->rchild;
+    return temp;
+}
+
+Node *erase_maintain(Node *root) {
+    if (root->lchild->color != DOUBLE_BLACK && root->rchild->color != DOUBLE_BLACK) return root;
+    if (root->rchild->color == DOUBLE_BLACK) {
+        if (root->lchild->color == RED) {//兄弟结点为红
+            root->color = RED;
+            root->lchild->color = BLACK;
+            root = right_rotate(root);
+            root->rchild = erase_maintain(root->rchild);
+            return root;
+        }
+        if (!hasRedChild(root->lchild)) {//兄弟节点为黑,并没有红子树
+            root->color += 1;
+            root->lchild->color -= 1;
+            root->rchild->color -= 1;
+            return root;
+        }
+        if (root->lchild->lchild->color != RED) {//兄弟结点为黑,有一个红子树
+            root->lchild->rchild->color = BLACK;//LR
+            root->lchild->color = RED;
+            root->lchild = left_rotate(root->lchild);
+        }
+        root->lchild->color = root->color;//LL
+        root->rchild->color -= 1;
+        root = right_rotate(root);
+        root->lchild->color = root->rchild->color = BLACK;
+    } else {
+        if (root->rchild->color == RED) {
+            root->color = RED;
+            root->rchild->color = BLACK;
+            root = left_rotate(root);
+            root->lchild = erase_maintain(root->lchild);
+            return root;
+        }
+        if (!hasRedChild(root->rchild)) {
+            root->color += 1;
+            root->lchild->color -= 1;
+            root->rchild->color -= 1;
+            return root;
+        }
+        if (root->rchild->rchild->color != RED) {//RL
+            root->rchild->lchild->color = BLACK;
+            root->rchild->color = RED;
+            root->rchild = right_rotate(root->rchild);
+        }
+        root->rchild->color = root->color;//RR
+        root->lchild->color -= 1;
+        root = left_rotate(root);
+        root->lchild->color = root->rchild->color = BLACK;
+    }
+    return root;
+}
+
+Node *__erase(Node *root, int key) {
+    if (root == NIL) return root;
+    if (root->key > key) {
+        root->lchild = __erase(root->lchild, key);
+    } else if (root->key < key) {
+        root->rchild = __erase(root->rchild, key);
+    } else {
+        if (root->lchild == NIL || root->rchild == NIL) {
+            Node *temp = root->lchild == NIL ? root->rchild : root->lchild;
+            temp->color += root->color;
+            free(root);
+            return temp;
+        } else {
+            Node *temp = predeccessor(root);//找前驱
+            root->key = temp->key;//直接换值
+            root->lchild = __erase(root->lchild, temp->key);//再去左子树里删去前驱结点
+        }
+    }
+    return erase_maintain(root);
+}
+
+Node *erase(Node *root, int key) {
+    root = __erase(root, key);
+    root->color = BLACK;
+    return root;
+}
+
+void clear(Node *root) {
+    if (root == NIL) return ;
+    clear(root->lchild);
+    clear(root->rchild);
+    free(root);
+    return ;
+}
+
+void output(Node *root) {
+    if (root == NIL) return ;
+    output(root->lchild);
+    printf("%d %d %d %d\n", 
+        root->key, 
+        root->color,
+        root->lchild->key, 
+        root->rchild->key
+    );
+    output(root->rchild);
+    return ;
+}
+
+int main() {
+    int op, val;
+    Node *root = NIL;
+    while (~scanf("%d%d", &op, &val)) {
+        switch (op) {
+            case 1: root = insert(root, val); break;
+            case 2: root = erase(root, val); break;
+            case 3: output(root);
+        }
+    }
+    return 0;
+}
